@@ -1,0 +1,15 @@
+[Unit]
+Description=readthedocs service
+Requires=network.target
+After=syslog.target network.target
+
+[Service]
+Type=simple
+User=admin
+Group=www-data
+WorkingDirectory=${readthedocs_root}
+ExecStart=${readthedocs_root}/venv/bin/gunicorn --bind ${readthedocs_sock} --workers 4 readthedocs.wsgi:application
+TimeoutStartSec=0
+
+[Install]
+WantedBy=multi-user.target

@@ -79,6 +79,11 @@ variable "web_instance_type" {
   default     = "m5.large"
 }
 
+variable "web_num_workers" {
+  description = "Number of gunicorn workers to use."
+  default     = 4
+}
+
 variable "web_volume_size_gb" {
   description = "Data volume size in gigabytes."
   default     = 25

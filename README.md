@@ -2,19 +2,21 @@
 
 This module contains the [Terraform](https://terraform.io) configuration for
 a [Read the Docs](https://readthedocs.org) service stack cluster running on AWS
-infrastructure.
-
-It is composed of `alarm`, `db` and `web` submodules.
-
-It builds the following AWS resources:
+infrastructure.  It is composed of `alarm`, `db` and `web` submodules, and
+builds the following AWS resources:  
 
 - an SNS alarm topic
 - a DNS CNAME record for the domain
 - an SSL cert for the domain
-- a Debian 9 EC2 instance for readthedocs web service
-- a PostgreSQL RDS instance for readthedocs database service
+- a Debian 9 EC2 instance for web service
+- a PostgreSQL 10 RDS instance for database service
 - security groups for web and database access
 - cloud watch alarms for system health
+
+## Prerequisites
+
+This module uses the [aws cli](https://aws.amazon.com/cli/) when provisioning alerts.
+Ensure that it is installed and available in your $PATH.
 
 ## Usage
 
@@ -23,16 +25,16 @@ Create a module resource with this repository as its source:
     module "production" {
       source           = "git::ssh://github.com/mojochao/readthedocs-aws-tf-module.git?ref=1.0.0"
       providers        = {
-        aws            = { ... }            # yours will vary!
+        aws            = { ... }
       }
 
       alerts_email     = "readthedocs-alerts@mydomain.com"
       domain_name      = "readthedocs.mydomain.com"
       environment      = "production"
-      hosting_zone     = "com.mydomain."    # yours will vary!
-      subnet           = "subnet-7d9e3f39"  # yours will vary!
-      tags             = { ... }            # yours will vary!
-      vpc              = "vpc-7a2cb214"     # yours will vary!
+      hosting_zone     = "com.mydomain."
+      subnet           = "subnet-deadbeef"
+      tags             = { ... }
+      vpc              = "vpc-deadbeef"
     }
 
 In the example above, only the minimal required inputs are shown.  Readthedocs
@@ -64,6 +66,7 @@ This module provides the following inputs, which are forwarded to its `alarm`,
 | vpc | AWS VPC id | string | - |
 | web_instance_ami | AWS Debian AMI to use | string | `"ami-0574f98a32ba41dd7"` |
 | web_instance_type | AWS EC2 instance type | string | `"m5.large"` |
+| web_num_workers | Number of gunicorn workers to use. | integer | `4` |
 | web_volume_size_gb | Data volume size in gigabytes | integer | `25` |
 
 The default AMI used is a Debian 9 AMI for the default `us-west-2` region.

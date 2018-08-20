@@ -8,7 +8,7 @@ Type=simple
 User=admin
 Group=www-data
 WorkingDirectory=${readthedocs_root}
-ExecStart=${readthedocs_root}/venv/bin/gunicorn --bind ${readthedocs_sock} --workers 4 readthedocs.wsgi:application
+ExecStart=${readthedocs_root}/venv/bin/gunicorn --bind ${readthedocs_sock} --workers ${gunicorn_num_workers} readthedocs.wsgi:application
 TimeoutStartSec=0
 
 [Install]

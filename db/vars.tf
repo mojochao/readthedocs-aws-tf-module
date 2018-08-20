@@ -1,6 +1,6 @@
-//variable "alerts_arn" {
-//  description = "Alerts SNS topic ARN."
-//}
+variable "alerts_sns_topic_arn" {
+  description = "The alerts SNS topic ARN."
+}
 
 variable "cluster_name" {
   description = "The cluster name."

@@ -67,7 +67,7 @@ resource "aws_route53_record" "readthedocs" {
 //}
 
 # -----------------------------------------------------------------------------
-# readthedocs server resources.
+# Web server resources.
 # -----------------------------------------------------------------------------
 
 data "template_file" "install_sh" {
@@ -97,6 +97,7 @@ data "template_file" "pg_service_conf" {
 data "template_file" "readthedocs_service" {
   template                   = "${file("${path.module}/templates/readthedocs.service")}"
   vars {
+    gunicorn_num_workers     = "${var.gunicorn_num_workers}"
     readthedocs_root         = "${local.readthedocs_root}"
     readthedocs_sock         = "${local.readthedocs_sock}"
   }
@@ -154,7 +155,7 @@ resource "aws_instance" "readthedocs" {
 }
 
 # -----------------------------------------------------------------------------
-# readthedocs security group resources.
+# Web security group resources.
 # -----------------------------------------------------------------------------
 
 resource "aws_security_group" "readthedocs" {
@@ -187,4 +188,25 @@ resource "aws_security_group_rule" "readthedocs_allow_all_outbound" {
   to_port                    = 0
   protocol                   = "-1"
   cidr_blocks                = ["0.0.0.0/0"]
+}
+
+# -----------------------------------------------------------------------------
+# Web monitoring resources.
+# -----------------------------------------------------------------------------
+
+resource "aws_cloudwatch_metric_alarm" "readthedocs_cpu_alarm" {
+  alarm_name                = "${var.cluster_name}-web-cpu-alarm"
+  alarm_description         = "CPU utilization on ${var.cluster_name} web EC2 instance"
+  alarm_actions             = ["${var.alerts_sns_topic_arn}"]
+  comparison_operator       = "GreaterThanOrEqualToThreshold"
+  threshold                 = "80"
+  evaluation_periods        = "2"
+  metric_name               = "CPUUtilization"
+  namespace                 = "AWS/EC2"
+  period                    = "120"
+  statistic                 = "Average"
+
+  dimensions {
+    InstanceId              = "${aws_instance.readthedocs.id}"
+  }
 }

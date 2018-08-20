@@ -7,9 +7,17 @@ locals {
   }
 }
 
+module "alerts" {
+  source = "./alerts"
+
+  alerts_email               = "${var.alerts_email}"
+  cluster_name               = "${local.cluster_name}"
+}
+
 module "db" {
   source = "./db"
 
+  alerts_sns_topic_arn      = "${module.alerts.sns_topic_arn}"
   cluster_name               = "${local.cluster_name}"
   instance_type              = "${var.pg_instance_type}"
   pg_dbname                  = "${var.pg_dbname}"
@@ -25,9 +33,11 @@ module "db" {
 module "web" {
   source = "./web"
 
+  alerts_sns_topic_arn      = "${module.alerts.sns_topic_arn}"
   cluster_name               = "${local.cluster_name}"
   domain_name                = "${var.domain_name}"
   environment                = "${var.environment}"
+  gunicorn_num_workers       = "${var.web_num_workers}"
   hosting_zone               = "${var.hosting_zone}"
   instance_ami               = "${var.web_instance_ami}"
   instance_ssh_key           = "${var.ssh_key}"

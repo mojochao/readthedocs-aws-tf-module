@@ -44,23 +44,23 @@ resource "aws_security_group_rule" "allow_all_outbound" {
   cidr_blocks               = ["0.0.0.0/0"]
 }
 
-//# -----------------------------------------------------------------------------
-//# Database monitoring resources.
-//# -----------------------------------------------------------------------------
-//
-//resource "aws_cloudwatch_metric_alarm" "database-storage-low-alarm" {
-//  alarm_name                = "${var.cluster_name}-database-storage-low-alarm"
-//  alarm_description         = "This metric monitors ${var.cluster_name} database storage dipping below threshold"
-//  alarm_actions             = ["${var.alerts_arn}"]
-//  comparison_operator       = "LessThanThreshold"
-//  threshold                 = "20"
-//  evaluation_periods        = "2"
-//  metric_name               = "FreeStorageSpace"
-//  namespace                 = "AWS/RDS"
-//  period                    = "120"
-//  statistic                 = "Average"
-//
-//  dimensions {
-//    DBInstanceIdentifier    = "${aws_db_instance.database.id}"
-//  }
-//}
+# -----------------------------------------------------------------------------
+# Database monitoring resources.
+# -----------------------------------------------------------------------------
+
+resource "aws_cloudwatch_metric_alarm" "database-storage-low-alarm" {
+  alarm_name                = "${var.cluster_name}-database-storage-low-alarm"
+  alarm_description         = "This metric monitors ${var.cluster_name} database storage dipping below threshold"
+  alarm_actions             = ["${var.alerts_sns_topic_arn}"]
+  comparison_operator       = "LessThanThreshold"
+  threshold                 = "20"
+  evaluation_periods        = "2"
+  metric_name               = "FreeStorageSpace"
+  namespace                 = "AWS/RDS"
+  period                    = "120"
+  statistic                 = "Average"
+
+  dimensions {
+    DBInstanceIdentifier    = "${aws_db_instance.database.id}"
+  }
+}

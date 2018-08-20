@@ -1,6 +1,6 @@
-//variable "alerts_email" {
-//  description = "Email address to use when alerting."
-//}
+variable "alerts_sns_topic_arn" {
+  description = "The alerts SNS topic ARN."
+}
 
 variable "cluster_name" {
   description = "Readthedocs service cluster name."
@@ -12,6 +12,10 @@ variable "domain_name" {
 
 variable "environment" {
   description = "Environment type."
+}
+
+variable "gunicorn_num_workers" {
+  description = "Number of gunicorn workers to use."
 }
 
 variable "hosting_zone" {
